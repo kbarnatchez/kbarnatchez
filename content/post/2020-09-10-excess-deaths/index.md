@@ -6,14 +6,14 @@ output:
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding) })
 author: "Keith Barnatchez"
-date: "2019-07-21T13:43:40"
+date: "2019-03-24T13:43:40"
 comments: true
 ---
 
-With the COVID-19 pandemic raging for roughly half a year now,
-numerous institutions have worked together to make daily, state-level
-data on cases and deaths available to the public. Among the many useful
-tools that are easily accessed include JHU’s coronavirus dashboard and
+With the COVID-19 pandemic raging for roughly half a year now, numerous
+institutions have worked together to make daily, state-level data on
+cases and deaths available to the public. Among the many useful tools
+that are easily accessed include JHU’s coronavirus dashboard and
 Worldometer’s COVID tracker. As impressive as these efforts have been,
 the data available only paint part of the picture. The issue with cases
 is intuitive: people are less likely to get a test if they don’t feel
@@ -21,7 +21,7 @@ sick (even if they really are carrying the virus), so reported cases
 likely underestimate the true value. The issue with deaths is both more
 important to understand and more complicated: there are competing
 sources of causes behind any death: complications due to COVID, causes
-excluding COVID, and causes that are indirectly influenced by CinslOVID
+excluding COVID, and causes that are indirectly influenced by COVID
 (e.g. forgoing a heart surgery to avoid the hospital/due to lack of
 insurance because of a job layoff and then suffering a cardiac arrest).
 
