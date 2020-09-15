@@ -2,10 +2,9 @@
 layout: post
 title: Problems with letting "the recovered" return to work
 date: "2019-03-24T13:43:40"
+lastmod: "2019-03-24T13:43:40"
 excerpt: "How concerned should we be about false positives? (spoiler: a lot)"
 tags: [false positives, sensitivity, covid]
-comments: true
-category: blog
 ---
 
 I made an interactive post to demonstrate why we need to be careful before considering policies that grant "the recovered" -- people who received a positive COVID test at some point in the past -- special permissions to return to work/volunteer in contact intensive positions. You can check it out [here](https://keithbarnatchez.shinyapps.io/covid_testing/).
