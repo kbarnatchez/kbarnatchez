@@ -1,13 +1,3 @@
----
-title: "Excess Deaths Due to Covid"
-output:
-  md_document:
-    preserve_yaml: TRUE
-author: "Keith Barnatchez"
-date: "July 21, 2020"
-comments: true
----
-
 With the COVID-19 pandemic raging for roughly half a year now, numerous
 institutions have worked together to make daily, state-level data on
 cases and deaths available to the public. Among the many useful tools
