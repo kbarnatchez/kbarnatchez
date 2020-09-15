@@ -10,10 +10,10 @@ date: "July 21, 2020"
 comments: true
 ---
 
-With the COVID-19 pandemic raging for roughly half a year now, numerous
-institutions have worked together to make daily, state-level data on
-cases and deaths available to the public. Among the many useful tools
-that are easily accessed include JHU’s coronavirus dashboard and
+Yeeee With the COVID-19 pandemic raging for roughly half a year now,
+numerous institutions have worked together to make daily, state-level
+data on cases and deaths available to the public. Among the many useful
+tools that are easily accessed include JHU’s coronavirus dashboard and
 Worldometer’s COVID tracker. As impressive as these efforts have been,
 the data available only paint part of the picture. The issue with cases
 is intuitive: people are less likely to get a test if they don’t feel
