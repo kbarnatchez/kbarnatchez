@@ -3,15 +3,8 @@ title: "Excess Deaths Due to Covid"
 output:
   md_document:
     preserve_yaml: TRUE
-knit: (function(inputFile, encoding) {
-  rmarkdown::render(inputFile, encoding = encoding) })
 author: "Keith Barnatchez"
 date: "July 21, 2020"
-excerpt: "Getting a better sense of COVID's toll"
-layout: post
-category: blog
-tags: [covid, CDC, health]
-modified: 9/10/2020, 9:31:14
 comments: true
 ---
 
