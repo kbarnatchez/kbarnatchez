@@ -6,7 +6,7 @@ output:
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding) })
 author: "Keith Barnatchez"
-date: "July 21, 2020"
+date: "2019-07-21T13:43:40"
 comments: true
 ---
 

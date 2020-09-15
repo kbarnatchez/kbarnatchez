@@ -2,7 +2,7 @@
 layout: post
 title: Visualizing measurement error
 modified: 5/6/2020, 9:20:12
-date: 9/6/2020
+date: "2019-09-10T13:43:40"
 excerpt: "It gets messy quick"
 tags: [measurement error, statistics]
 comments: true
