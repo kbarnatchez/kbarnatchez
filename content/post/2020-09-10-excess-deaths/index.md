@@ -10,7 +10,7 @@ date: "2019-07-21T13:43:40"
 comments: true
 ---
 
-Yeeee With the COVID-19 pandemic raging for roughly half a year now,
+With the COVID-19 pandemic raging for roughly half a year now,
 numerous institutions have worked together to make daily, state-level
 data on cases and deaths available to the public. Among the many useful
 tools that are easily accessed include JHU’s coronavirus dashboard and
@@ -29,7 +29,7 @@ insurance because of a job layoff and then suffering a cardiac arrest).
 
 It can be hard to interpret excess deaths totals by themselves. If we
 let *E*<sub>*i*</sub> and *D*<sub>*i*</sub> denote the number cumulative
-number of excess non-COVID) and observed (COVID) deaths, then the ratio
+number of excess (non-COVID) and observed (COVID) deaths, then the ratio
 $\\frac{E\_i}{D\_i}$ gives us a sense of how large that state’s count of
 excess deaths is relative to its count of COVID deaths. For states with
 
