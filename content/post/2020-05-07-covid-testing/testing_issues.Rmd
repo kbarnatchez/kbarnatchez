@@ -1,0 +1,118 @@
+---
+title: "Potential issues with letting 'the recovered' return to work"
+author: "Keith Barnatchez"
+date: "May 6, 2020"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+```
+
+**The views in this post are my own and don't reflect the views of any schools/organizations/workplaces that I am/have been affiliated with.**
+
+Now that we're nearly 2 months into the lockdown and longing for life to return to some semblance of normalcy, suggestions for how to safely "open up the economy" are popping up everywhere. Isolate the old, let the recovered return to work, forget about lockdowns altogether, the list goes on. While all of the popular suggestions differ from one another to some extent, they all rely on the existence of widespread, effective testing. But I don't think enough emphasis is being put on how accurate these tests need to be.
+
+Let's focus on the "let the recovered return to work" policy. The idea is simple -- if you've had coronavirus, you're probably/hopefully (at least temporarily) immune to it, so you're no longer suspectible and have no need to be isolated. If we only allow recovered individuals to return to work (and gradually allow this pool of people to increase as more people become infected and recover) then test-and-trace should be less of a concern since the pool of people allowed to interact in the workforce are no longer at-risk, and anyone who does become infected should be at low-risk of transmitting to others since they haven't been granted permission to join the workforce pool. The recovered can work while we wait out for a vaccine or an effective antivrial.
+
+The issue with this logic is that it ignores the *sensitivity* (the percent of COVID-positive patients that the test correctly identifies as positive) and *specificity* (the percent of COVID-negative patients that the test correctly identifies as negative) of the testing technology used to diagnose COVID patients in the first place. Even when tiny margins of error exist, this strategy can put many at risk of infection; people who receive false positives would be allowed to go back to work, even though they have no immunity.
+
+Let's imagine we have a big pool of people that have tested positive for coronavirus and since passed all protocol to be considered "recovered." If we have information about the prevalence of a disease and the sensitivity/specificity of its test, then we can calculate what percent of people with positive test results **actually had the disease** by using [Bayes's rule](https://en.wikipedia.org/wiki/Bayes%27_theorem). For COVID,
+
+$$
+\begin{align}
+\text{Prob}(\text{Had COVID | + test}) = & \frac{\text{Sensitivity} \times \text{Prevalence}}{\text{Sensitivity} \times \text{Prevalence}  + (1-\text{Specificity}) \times (1 - \text{Prevalance})} \\
+& = \frac{\text{True positive rate } \times \text{Prevalence}}{\text{True positive rate} \times \text{Prevalence } + \text{False positive rate } \times (1-\text{Prevalence})  } 
+\end{align}
+$$
+
+Use the panel below to alter the prevalence of COVID and the average sensitivity of its tests. The graph below plots the percent of positive-testers who would actually had the disease over possible values for the specificty. 
+
+```{r, echo=FALSE}
+
+inputPanel(
+  
+  sliderInput("prev", label = "Select prevalance:",
+              min = 0.01, max = 0.25, value = 0.05, step = 0.01),
+  
+  sliderInput("sensitivity", label = "Select sensitivty:",
+              min = 0.01, max = 1, value = 0.9, step = 0.01)
+)
+
+renderPlot({
+  
+  specificty <- seq(0,1,0.01)
+  posterior <- 100*(input$sensitivity*input$prev)/(input$sensitivity*input$prev + (1-specificty)*(1-input$prev))
+  negpost <- 100-posterior
+  specificty <- 100*specificty
+  
+  temp_data <- data.frame(specificty,posterior,negpost)
+  colnames(temp_data) <- c('Specificty', 'Posterior','Negpost')
+  
+  ggplot(temp_data, aes(Specificty,Posterior)) +
+       geom_line(size=1) +
+       xlab("Specificty") +
+       ggtitle("Percent of positive-testers who actually have/had COVID")
+  
+  ggplot(temp_data, aes(Specificty,Negpost)) +
+       geom_line(size=1) +
+       xlab("Specificty") +
+       ylab("") +
+       ggtitle("Percent of positive-testers who never had COVID")
+})
+
+```
+
+Let's zoom in on the plot above. Choose a value for the false positive rate (this is 1 - specificity). The dots below represent a hypothetical pool of positive-testers -- the red dots represent patients who never had COVID (meaning they have no immunity) and the black dots people who did have COVID.
+
+```{r, echo=FALSE}
+
+inputPanel(
+  
+  sliderInput("spec", label = "Select false positive rate:",
+              min = 0.01, max = 1, value = 0.05, step = 0.01)
+)
+
+renderPlot({
+  negpost <- 1 - (input$sensitivity*input$prev)/(input$sensitivity*input$prev + (input$spec)*(1-input$prev))
+  N <- 20
+   
+  x_axis <- sort(rep(1:N,N))
+  y_axis <- rep(1:N,N)
+  color <- 1:N^2
+  cutoff <- ceiling(negpost*(N^2))
+  color <- sample(1+as.numeric(color<cutoff))
+  
+  data <- data.frame(x_axis,y_axis,color)
+
+  ggplot(data, aes(x_axis,y_axis)) + 
+    geom_point(size=3, color=color) +
+    xlab("") +
+    ylab("") +
+    ggtitle("Share of positive-testers who never had COVID") +
+    scale_x_continuous(minor_breaks = 1:N, breaks = FALSE) +
+    scale_y_continuous(minor_breaks = 1:N, breaks = FALSE)
+})
+
+```
+
+After playing around with the values for a while, you'll notice a couple things (among others):
+
+- The number of false positives in our hypothetical blob increases as the overall prevalence of COVID decreases.
+
+- Even when the sensitivity rate is really high and the false positive rate really low, there remain a considerable number of false postives in our hypothetical blob (even if the sensitivity rate is 100%!).
+
+The first point, which may be counterintuitive at first, reveals a catch-22 scenario: if the prevalence is low (a good thing) the share of false positives among all positives is higher (a bad thing). We can reduce the number of false positives in the positive pool (a good thing) at the cost of increasing the prevalence of the disease (a very bad thing). The second point makes one thing obvious: determining immunity from initial diagnosis of COVID/successful recovery is not enough to ensure that the "recovered" can return to work safely. 
+
+Now, this is all assuming that we determine our pool of positive/immune people from an initial test that marked them as COVID-positive (ignoring the protocol of deeming a person "revovered" if further down the line they test negative at least once, since this does not solve the issue of initial false positives). Obviously, there are better ways to go about this, such as administering antibody tests after the fact. There are likely lots of ideas out there from much smarter people, so I won't bother making my own list.
+
+The points I've tried to make are that
+
+- If we end up seriously considering policies that allow special permissions for people who have tested positive for COVID and since recovered, we can't afford to coast on the initial test results, even if they are near-perfectly accurate. Safer approaches will involve mulitple rounds of different types of tests (e.g. viral and antibody) to guard against initial errors.
+
+- That being said, testing accuracy is extremely important (it's just that single-round strategies are likely to fail when the overall prevalence is not extremely high).
+
+This doesn't just apply to the public health response; it also applies to growing body of epidemic models tailored to COVID. Most of the models I've seen (especially SIR-type ones) don't assume any error rate in the detection of the "recovered" group, which we can see if important to consider when looking at policy counterfactuals that involve mobilizing recovered individuals. There are plenty of smart peeople out there capable of implementing these wrinkles into their models. Hopefully they do.
