@@ -37,6 +37,10 @@ $$
 
 In turn, the log likelihood is
 
+$$
+\text{log}L(\varepsilon) = -\frac{N}{2}\log2\pi - N\log\sigma - \frac{1}{2\sigma^2}\varepsilon'\varepsilon 
+$$
+
 Now, we don't observe $\varepsilon$ but we do observe $y$. It's tempting to just replace $\varepsilon$ with $y$ in the log-likelihood above, but this is not correct. Recall that if we know the density for some random variable $x_1$ to be $f_{x_1}(x_1)$, and we know some other variable $x_2$ is related to $x_1$ by $x_1 = g(x_2)$, then $f_{x_2} = f_{x_1}(g(x_2))\text{det}(J_{x_2})$, where $J_{x_2}$ is the Jacobian of $g$ with respect to $x_2$. In our case, 
 $$
 \varepsilon = (I - \rho_1 C - \rho_2 F)y - X\beta
