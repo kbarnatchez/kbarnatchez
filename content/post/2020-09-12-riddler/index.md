@@ -7,6 +7,7 @@ knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding) })
 author: "Keith Barnatchez"
 date: "2019-09-12T13:43:40"
+comments: true
 ---
 
 This week’s Riddler Express was a made with playoff basketball in mind
