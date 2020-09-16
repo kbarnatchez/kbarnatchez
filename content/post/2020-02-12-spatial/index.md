@@ -29,8 +29,8 @@ Assuming normality of $\varepsilon$, we know that
 
 $$
 \begin{aligned}
-L(\varepsilon) &= \prod_{i=1}^N \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{1}{2}\left(\frac{\varepsilon_i}{\sigma}\right)^2 } \\
-&= \left(\frac{1}{2\pi \sigma^2} \right)^{N/2} e^{\frac{N}{2\sigma^2}\sum_{i=1}^{N}\varepsilon_i^2} \\
+L(\varepsilon) &= \prod_{i=1}^N \frac{1}{\sqrt{2\pi \sigma^2}} e^{-\frac{1}{2}\left(\frac{\varepsilon_i}{\sigma}\right)^2 } \\\\\\
+&= \left(\frac{1}{2\pi \sigma^2} \right)^{N/2} e^{\frac{N}{2\sigma^2}\sum_{i=1}^{N}\varepsilon_i^2} \\\\\\
 &= \left(\frac{1}{2\pi \sigma^2} \right)^{N/2} e^{\frac{N}{2\sigma^2}\varepsilon' \varepsilon}
 \end{aligned} 
 $$
