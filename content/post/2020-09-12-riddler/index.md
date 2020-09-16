@@ -81,7 +81,7 @@ get the same result through simulations:
 
     num_success/counter
 
-    ## [1] 0.2414
+    ## [1] 0.2426
 
 We see that the results match.
 
@@ -101,12 +101,6 @@ We can plot this over *n*:
     for (i in 3:max(n)) {
       pi[i-2] <- 3 * (0.5*(i^2 - i))/(i^3)
     }
-
-    # Plot the probabilities over n
-    ggplot(data=NULL,aes(x=n,y=pi)) + geom_line(size=1.2, color = 'steelblue') +
-      ylab("Prob. of 2 teams against 1 being possible") +
-      xlab("Max number of players per town") + 
-      ggtitle("Don't plan on 50 v. 50 pickup basketball") 
 
 ![](index_files/figure-markdown_strict/Figure1-1.png)
 

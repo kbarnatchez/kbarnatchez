@@ -78,7 +78,7 @@ for (i in 3:max(n)) {
 }
 ```
 
-```{r Figure1}
+```{r Figure1, echo=FALSE}
 # Plot the probabilities over n
 ggplot(data=NULL,aes(x=n,y=pi)) + geom_line(size=1.2, color = 'steelblue') +
   ylab("Prob. of 2 teams against 1 being possible") +
