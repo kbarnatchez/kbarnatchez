@@ -52,9 +52,8 @@ $$
 \\end{bmatrix}
 $$
 This gives us 10 feasible combinations between towns A and B, so in turn
-there are 30 in total given that there are
-$$3 \\choose 2 = 3$$
-possible ways to pair towns. That implies that there’s a
+there are 30 in total given that there are $3\\choose2$  = 3 possible
+ways to pair towns. That implies that there’s a
 $\\frac{30}{5^3} = \\frac{6}{25}$ probability of being able to pit 2
 towns against 1 on any given week. Just to be sure, we can check that we
 get the same result through simulations:
@@ -82,7 +81,7 @@ get the same result through simulations:
 
     num_success/counter
 
-    ## [1] 0.2451
+    ## [1] 0.2289
 
 We see that the results match.
 
@@ -104,7 +103,7 @@ We can plot this over *n*:
     }
 
     # Plot the probabilities over n
-    ggplot(,aes(x=n,y=pi)) + geom_line(size=1.2, color = 'steelblue') +
+    ggplot(data=NULL,aes(x=n,y=pi)) + geom_line(size=1.2, color = 'steelblue') +
       ylab("Prob. of 2 teams against 1 being possible") +
       xlab("Max number of players per town") + 
       ggtitle("Don't plan on 50 v. 50 pickup basketball") 
