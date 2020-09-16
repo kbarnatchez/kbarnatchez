@@ -35,7 +35,7 @@ $$
 \end{bmatrix}
 $$
 This gives us 10 feasible combinations between towns A and B, so in turn there are 30 in total given that there are $3\choose2$ $=3$ possible ways to pair towns. That implies that there's a $\frac{30}{5^3} = \frac{6}{25}$ probability of being able to pit 2 towns against 1 on any given week. Just to be sure, we can check that we get the same result through simulations:
-```{r}
+```{r, include=FALSE, echo=FALSE}
 nsim <- 10000 # number of iterations
 nmax <- 5 # max number of players from any town
 

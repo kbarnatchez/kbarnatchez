@@ -58,31 +58,6 @@ $\\frac{30}{5^3} = \\frac{6}{25}$ probability of being able to pit 2
 towns against 1 on any given week. Just to be sure, we can check that we
 get the same result through simulations:
 
-    nsim <- 10000 # number of iterations
-    nmax <- 5 # max number of players from any town
-
-    # Keep track of instances where two towns can be pitted against one
-    counter <- 0 
-    num_success <- 0
-    for (i in 1:nsim) {
-      
-      # Draw number of players for each town
-      A <- sample(1:nmax,1)
-      B <- sample(1:nmax,1)
-      C <- sample(1:nmax,1)
-      
-      # If feasible, increment our success tracker
-      if ( (A+B == C) || (B+C == A) || (C+A == B) ) {
-        num_success <- num_success + 1
-      }
-      
-      counter <- counter + 1
-    }
-
-    num_success/counter
-
-    ## [1] 0.2325
-
 We see that the results match.
 
 ### General case
