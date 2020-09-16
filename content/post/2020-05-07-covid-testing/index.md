@@ -14,5 +14,4 @@ The main takeaways:
 - We have a double-edged problem: when prevalence of coronavirus is *low* the likelihood of positive-test individuals being false positives is higher. While the likelihood of a positive-test being a false positive decreases as prevalence goes up, a high prevalence is a problem in and of itself. 
 - Inevitably, letting "recovered" people return to workplaces will create a pool of people with a large share having *no imunity* (and perhaps a false sense of security that they do). 
 
-
-
+Source code can be found [here](https://github.com/kbarnatchez/kbarnatchez/tree/master/content/post/2020-05-07-covid-testing).

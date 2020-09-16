@@ -1,0 +1,250 @@
+---
+title: "Visualizing measurement error"
+author: "Keith Barnatchez"
+date: "July 27, 2020"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(ggplot2)
+library(mvtnorm)
+```
+
+From past statistics courses, you may recall something along the lines of the phrase "your analysis is only as good as your data." This makes sense at face-value: if the data we collect don't really reflect the selected characteristics of our desired population, then even the most thoughtful models won't be able to do much for us. Garbage in, garbage out.
+
+Chances are, you're familiar the concept of data quality in the context of sampling bias: when your data isn't a simple random sample from your population of interest, inferences are likely to be biased. Among the many (in)famous examples of poor sampling strategies undermining otherwise thoughtful data collection efforts is the [1936 Literary Digest presidential election poll](https://www.math.upenn.edu/~deturck/m170/wk4/lecture/case1.html). One of the largest polls of its time (at a whopping 2.4 million people), the Digest predicted that Kansas Governor Alfred Landon would defeat incumbent Franklin D. Roosevelt in a 19% landslide. And with such a large sample, the poll's margin of error was guaranteed to be tiny. The issue? The Digest acquired its sample by sending questionnaires out to addresses acquired from exhaustively combing through telephone directories. At the time, having a phone was much more of a luxury than it is today, and in turn the Digest's sample was more reflective of the wealthy and upper-middle classes. Their results were precise, but way off-the-mark.
+
+With the benefit of hindsight and improved technology, we have become much better at selecting truly representative samples (that's not to say that academic analyses aren't still plagued by poor sampling). All would seem to be well, but a large problem still prevails in many statistical analyses: measurement error. Simply put, accurately measuring variables of interest is often easier said than done. False-positives in diagnostic tests are unavoidable, GDP is so notoriously difficult to measure that it has a standard revision schedule, and numerous biomarkers are subject to mechanical imperfections in the instruments used to measure them. Given the often systematic nature of measurement error, it's necessary to understand its effects -- and what we can do to improve our inferences by directly addressing the issue.
+
+In this post, we'll consider two illustrative issues, both in the context of linear regression. First, the simple case of a bivariate model where there is measurement error in the independent variable (but the model is otherwise well-behaved). Secondly, we'll look at the slightly more complicated case where we have multiple independent variables that are subject to measurement error.
+
+## The simple case: bivariate regression
+
+Consider a super simple model between some outcome $y$ and independent variable $x$:
+$$
+\begin{aligned}
+y&=\beta_0 + \beta_1x+e \\
+\varepsilon & \sim N(0,\sigma^2_e)
+\end{aligned}
+$$
+For simplicity, we'll assume $x \sim N(0,1)$. Now, imagine we're able to collect data on $y$ and $x$ jointly, but we measure $x$ with error. Then, 
+$$
+\begin{aligned}
+y&=\alpha_0 + \alpha_1\tilde{x}+\varepsilon \\
+\varepsilon & \sim N(0,\sigma^2_\varepsilon) \\
+\tilde{x} & = \underbrace{x}_\text{True value} + \underbrace{\nu}_\text{Meas. error}
+\end{aligned}
+$$
+It's typical to assume that we're right on average, that is $\mathbb{E}(\nu)=0$. Assuming normality, we can think of the standard deviation of $\nu$, $\sigma_\nu$, as the size of a typical measurement error. Since we're assuming $x$ comes from a standard normal distribution, we can go even further and interpret $\sigma_\nu/\sigma_x = \sigma_\nu$  as the ratio of variability in $x$ due measurement error vs. natural variation. Statisticians often refer to this measure as the "(un)reliability ratio," since it gives us a sense of how reliable our measurements are -- as the ratio increases, more of the measured variation in $x$ comes from noise in our measurements, making our overall measurements of $x$ less reliable. 
+
+Finally, define $\beta_1/\sigma_\varepsilon$ as the "signal-to-noise" ratio -- roughly speaking, this is the ratio of variability in $y$ about its conditional mean (given $x$) due to noise vs. variation explained by variation in $x$ (which we are assuming is purely random). 
+
+In most settings, the parameter of interest is $\beta_1$. Ideally, we'd be able to estimate $\beta_1$ but since we only observe $\tilde{x}$, we're only able to estimate $\alpha_1$. A natural question is how much the measurement error in $x$ causes our estimate, $\alpha_1$ to diverge from the true value $\beta_1$. The answer? It depends. 
+
+As it turns out, the accuracy of our estimate primarily depends on the reliability ratio (provided a non-zero true slope). For sufficiently large samples, the signal-to-noise ratio's influence is negligible, but the influence of the reliability ratio persists. In the sliders below, you can choose values for the true values of $\beta_0$ and $\beta_1$, as well as the ratio $\sigma_\varepsilon/\beta_1$ and $\sigma_\nu$.
+
+In the plot below, the blue points are the true pairs $(x,y)$ while the red points are the pairs $(\bar{x},y)$ that we observe due to measurement error. The dashed black line is the slope we'd estimate under no measurement error (as good as we can do given the current sample), while the solid line corresponds to what we actually estimate.
+```{r, echo=FALSE}
+
+inputPanel(
+  
+  sliderInput("b1", label = "True slope:",
+              min = -10, max = 10, value = 0, step = 0.1),
+  
+  sliderInput("b0", label = "True intercept:",
+              min = -10, max = 10, value = 0, step = 0.1),
+  
+  sliderInput("ratio", label = "(Un)Reliability ratio:",
+              min = 0, max = 5, value = 0, step = 0.05),
+  
+  sliderInput("N", label = "Sample size:",
+            min = 50, max = 1000, value = 0, step = 50),
+  
+  sliderInput("noise", label = "Signal-to-noise ratio:",
+              min = 0.1, max = 10, value = 0, step = 0.1)  
+  
+  
+)
+
+renderPlot({  
+  set.seed(1234)
+  x <- rnorm(input$N)
+  xtilde <- x + input$ratio*rnorm(input$N)
+  
+  y <- input$b0 + input$b1*x + (input$b1/input$noise)*rnorm(input$N)
+  
+  df <- data.frame(y,x,xtilde)
+  
+  ggplot(df,aes(x=xtilde, y=y)) + geom_point(color='red', alpha=0.2, size=4) +
+      geom_point(color='blue', alpha=0.2, x=x,y=y,size=4) +
+      xlab('Observed x') + ylab("y") +
+      geom_smooth(method='lm',se=FALSE,color='black') +
+      geom_smooth(aes(x=x,y=y),method='lm',se=FALSE,color='black',linetype='dashed')
+}) 
+
+```
+
+As you can see, in % terms our estimation error doesn't depend on the true value of the slope parameter $\beta_1$ at all (provided it's nonzero) after accounting for the signal-to-noise and reliability ratios. As the reliability ratio goes down, our estimate of $\beta_1$ gets pulled to zero -- this is what statisticians sometimes refer to as [attenuation bias](https://en.wikipedia.org/wiki/Regression_dilution). And in the case of two variables, it really makes sense when you think about it: as our measurements of $x$ become less and less reliable, the "noise" component from the measurement error begins to dominate the natural variation in $x$. In fact, as $\sigma_\nu \to \infty$, $x$ converges to pure noise, and it follows that $\text{Corr}(y,x)$ converges to 0 in finite samples.
+
+While not ideal, the problems caused in the simple bivariate case are not crushing. Sure, our results are biased towards zero, but if you are okay with conservative estimates of effect sizes this is not the worst thing. In fact, in these cases we can think about our estimated coefficient as a lower bound for the true effect (provided our other typical regression assumptions hold and our estimate is not too noisy). But the real world is messy, and we'll rarely be working with such idealized, simple models. What happens when our models are more complex? 
+
+## It gets messy quick
+Without inspecting further, it's tempting to extrapolate the "attenuation bias" intuition to more complex models. For example, let's consider a slightly more complicated model with two independent variables
+$$
+\begin{aligned}
+y&=\beta_0 + \beta_1x +  \beta_2 z + \varepsilon \\
+\varepsilon & \sim N(0,\sigma^2_\varepsilon)
+\end{aligned}
+$$
+where $x$ and $y$ are jointly distributed so that
+$$
+\begin{aligned}
+(x,z) \sim N\left( \begin{bmatrix} \mu_x  \\ \mu_z   \end{bmatrix}, \Sigma \right), \text{   } \Sigma = \begin{bmatrix} \sigma^2_x & \text{Cov}(x,z) \\ \text{Cov}(x,z) & \sigma^2_z \end{bmatrix}
+\end{aligned}
+$$
+
+To keep things as simple as possible, let's assume the marginal distributions of $x$ and $z$ are each standard normal, though we'll allow for the possibility that $x$ and $z$ are correlated. Like before, we assume that we measure $x$ and $z$ with mean zero, normally distributed (and uncorrelated!) errors:
+$$
+\begin{aligned}
+\tilde{x} & = \underbrace{x}_\text{True value} + \underbrace{\nu}_\text{Meas. error}, \text{ } \nu \sim N(0,\sigma^2_\nu) \\
+\tilde{z} & = \underbrace{z}_\text{True value} + \underbrace{\eta}_\text{Meas. error}, \text{ } \eta \sim N(0,\sigma^2_\eta)
+\end{aligned}
+$$
+As before, due to the measurement error we're only able to estimate
+$$
+y =\alpha_0 + \alpha_1\tilde{x} +  \alpha_2 \tilde{z} + u
+$$
+
+It seems sort of natural to extend our previous result to the current setting: in the face of non-zero measurement error and effects $\beta_1$ and $\beta_2$, we should expect our estimates $\alpha_1$ and $\alpha_2$ to be pulled towards zero. It turns out this is not guaranteed, and is heavily dependent on the covariance between $x$ and $y$ (since $x$ and $y$ both have variance of 1, we can actually interpret their covariance as their correlation). Try playing with the sliders below. In particular, consider altering the sliders to achieve the following scenarios:
+
+* Positive (negative) covariance b/w $x$ and $z$, high measurement error in both $x$ ad=nd $z$
+* Positive (negative) covariance b/w $x$ and $z$, high measurement error in only one of $x$ and $z$
+* Positive (negative) covariance b/w $x$ and $z$, no measurement error in $x$ or $z$
+
+```{r, echo=FALSE}
+
+inputPanel(
+  
+  sliderInput("phi", label = "Correlation b/w x and z:",
+              min=-0.99,max=0.99,value=0,step=0.01),
+  
+  sliderInput("a2", label = "True slope on z:",
+              min = -10, max = 10, value = 0, step = 0.1),
+  
+  sliderInput("a1", label = "True slope on x:",
+              min = -10, max = 10, value = 0, step = 0.1),
+  
+  sliderInput("a0", label = "True intercept:",
+              min = -10, max = 10, value = 0, step = 0.1),
+  
+  sliderInput("ratio_x", label = "(Un)Reliability ratio for x:",
+              min = 0, max = 5, value = 0, step = 0.05),
+  
+  sliderInput("ratio_z", label = "(Un)Reliability ratio for z:",
+              min = 0, max = 5, value = 0, step = 0.05),  
+  
+  sliderInput("N2", label = "Sample size:",
+            min = 50, max = 1000, value = 0, step = 50),
+  
+  sliderInput("noise2", label = "Residual standard error:",
+              min = 0.1, max = 10, value = 0, step = 0.1)  
+  
+  
+)
+
+renderPlot({  
+  set.seed(1234)
+  
+  # Generate x and z from MV normal dist
+  vec <- rmvnorm(input$N2, mean=c(0,0), sigma = rbind(c(1,input$phi),c(input$phi,1)) )
+  X <- vec[,1]
+  z <- vec[,2]
+  
+  # Create measurement error obs
+  Xtilde <- X + input$ratio_x*rnorm(input$N2)
+  ztilde <- z + input$ratio_z*rnorm(input$N2)
+  
+  y <- input$a0 + input$a1*X + input$a2*z + input$noise2*rnorm(input$N2)
+  
+  # Partial out x and z
+  res_x  <- as.array(lm(X ~ z)$residuals)
+  res_z  <- as.array(lm(z ~ X)$residuals)
+  res_xt <- as.array(lm(Xtilde ~ ztilde)$residuals)
+  res_zt  <- as.array(lm(ztilde ~ Xtilde)$residuals)
+  
+  df <- data.frame(y,res_x,res_z,res_xt,res_zt)
+  
+  # First, plot y on x
+  ggplot(df,aes(x=res_xt, y=y)) + geom_point(color='red', alpha=0.2, size=4) +
+      geom_point(color='blue', alpha=0.2, x=res_x,y=y,size=4) +
+      xlab('x - E(x|z)') + ylab("y") +
+      geom_smooth(method='lm',se=FALSE,color='black') +
+      geom_smooth(aes(x=res_x,y=y),method='lm',se=FALSE,color='black',linetype='dashed') +
+      ggtitle("Partial coefficient for x")
+  
+}) 
+
+renderPlot({
+  
+  set.seed(1234)
+  
+  # Generate x and z from MV normal dist
+  vec <- rmvnorm(input$N2, mean=c(0,0), sigma = rbind(c(1,input$phi),c(input$phi,1)) )
+  X <- vec[,1]
+  z <- vec[,2]
+  
+  # Create measurement error obs
+  Xtilde <- X + input$ratio_x*rnorm(input$N2)
+  ztilde <- z + input$ratio_z*rnorm(input$N2)
+  
+  y <- input$a0 + input$a1*X + input$a2*z + input$noise2*rnorm(input$N2)
+  
+  # Partial out x and z
+  res_x  <- as.array(lm(X ~ z)$residuals)
+  res_z  <- as.array(lm(z ~ X)$residuals)
+  res_xt <- as.array(lm(Xtilde ~ ztilde)$residuals)
+  res_zt  <- as.array(lm(ztilde ~ Xtilde)$residuals)
+  
+  df <- data.frame(y,res_x,res_z,res_xt,res_zt)
+  
+  # First, plot y on x
+  ggplot(df,aes(x=res_zt, y=y)) + geom_point(color='red', alpha=0.2, size=4) +
+      geom_point(color='blue', alpha=0.2, x=res_z,y=y,size=4) +
+      xlab('z - E(z|x)') + ylab("y") +
+      geom_smooth(method='lm',se=FALSE,color='black') +
+      geom_smooth(aes(x=res_z,y=y),method='lm',se=FALSE,color='black',linetype='dashed') +
+      ggtitle("Partial coefficient for z")
+  
+}) 
+
+```
+
+Note: in the plots above, I'm using the *Frisch-Waugh Theorem,* which says that given the model $Y = \beta_0 + \beta_1 X_1 + \cdots + \beta_k X_k + \varepsilon$, if I regress $X_i$ on the other $k-1$ independent variables and obtain residuals $\hat{U}$ and then estimate $Y = \alpha_0 + \alpha_1 \hat{U} + \nu$, then $\beta_i = \alpha_1$. In words, all this means is that the coefficient on $X_i$ given a set of controls is the same as the coefficient we'd get on the variation that remained unexplained in $X_i$ after accounting for our other controls. This provides us a nice way to use scatterplots for diagnosing the influence of individual variables in higher-dimensional models.
+
+You'll notice some things after playing around with the sliders for a while. For starters, provided there is no correlation between $x$ and $y$, we don't have to worry about how their measurement errors influence each other. As soon as we relax the assumption of zero correlation, however, a whole slew of issues become possible. In general, it holds that if we let $x$ be measured without error, it can be still be heavily influenced by measurement errors in $z$ provided sufficiently strong correlation between the two. Things get really weird, however, when varying other parameters of the data-generating process. Let's list out just a few the problematic scenarios that arise:
+
+* If *x* and *z* are positively correlated, then lower reliability in $z$ biases our estimate of $x$'s slope upward, _regardless of the sign of $x$'s true slope_, provided the true sign of $z$'s slope is positive
+* Similarly, if *x* and *z* are negatively correlated, then lower reliability in $z$ bias our estimate of $x$'s slope downward (when $z$'s true slope is positive).
+* When we flip the sign of $z$'s true slope, however, the above observations flip! Suddenly, lower reliability in $z$ pulls our estimate of $x$'s slope downward (provided positive correlation between the two variables).
+* It is possible for measurement errors in the two variables to partially cancel each other out when the signs of their true slope measurements are opposite (though the resulting estimates will be much noisier).
+
+**Takeaways:** 
+
+As you can see, there is a _lot_ to keep track of right away by adding just a single independent variable! When $x$ and $z$ are uncorrelated, things actually behave pretty nicely. Measurement error in $z$ doesn't effect our estimates of the slope in $x$ (after accounting for $x$'s measurement error) and vice versa, and we can largely extend our intuition from the bivariate case in this scenario. As soon as we allow for correlation, however, things get very messy. Above, we exhaustively listed out a few possible scenarios (and could have listed many more) and their ultimate effects on our estimates. But if anything, this just shows us how serious of a problem measurement error can be for a few reasons:
+
+* The models we typically work with are much more complex, and the set of covariances/potential measurement errors to keep track of blows up quickly. There is a reason we have little understanding of the closed-form behavior of models plagued by measurement error beyond simple bivariate models or very particular special cases in the multivariate cases.
+* If we suspect measurement error in a set of our variables, it likely won't be easy to get a reliable sense of their true covariances since their measurement error pushes them to pure noise. Remember, [correlation doesn't even imply correlation!](https://statmodeling.stat.columbia.edu/2014/08/04/correlation-even-imply-correlation/)
+
+## How much measurement error can we tolerate?
+You probably noticed that the influences of measurement error were pretty small for modest values of the "reliability ratio." In turn, it's reasonable to wonder whether it's okay to just live with the effects that small amounts of measurement error have on our models. As you probably expect, the answer again is that it depends.
+
+In all of the examples of this post, we have the advantage of knowing (and dictating!) the actual data-generating processes that we are in turn trying to model. In practice, we just about never have this luxury. It follows that as confident as we may be that the amount of measurement error or covariance between independent variables subject to measurement error is low, we run the risk of being overoptimistic. So what can we do? Some universal rules of thumb are helpful here:
+
+* Plot your data (correlation/scatterplot matrices are great here).
+* Understand as best as your can where your data is coming from (this can help with understanding the measurement process).
+* Be honest with your interpretations of the results.
+
+Most importantly, in my opinion, you should *always* attempt to model the measurement error in a variable when you suspect the problem may be serious, and examine how heavily your results are influenced. I discuss Bayesian methods for addressing measurement error in my next post, which you can check out here.
