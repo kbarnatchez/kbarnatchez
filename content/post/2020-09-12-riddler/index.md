@@ -81,7 +81,7 @@ get the same result through simulations:
 
     num_success/counter
 
-    ## [1] 0.2426
+    ## [1] 0.2325
 
 We see that the results match.
 
@@ -106,3 +106,5 @@ We can plot this over *n*:
 
 Source code for this post can be found
 [here](https://github.com/kbarnatchez/kbarnatchez/tree/master/content/post/2020-09-12-riddler).
+
+![](index_files/figure-markdown_strict/Figure2-1.png)
