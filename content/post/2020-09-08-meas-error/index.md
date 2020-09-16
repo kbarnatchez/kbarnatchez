@@ -14,3 +14,5 @@ _This is the first of a two-part post on measurement error. To view the second p
 The topic of measurement error is surprisingly underemphasized in many statistical textbooks, and there seem to be some misconceptions on how measurement error generalizes from simple bivariate models to higher-dimensional ones. I decided to write this post to help myself understand the issue of measurement error better, and to provide some interactive tools that may help people develop intuition. In this post, I discuss (and visualize) the effects of measurment error in the simple bivariate regression setting, as well as the slightly more complex 
 
 As this is an interactive post, I host it on Shinyapps. You can view it [here](https://keithbarnatchez.shinyapps.io/measurement_error/).
+
+Source code can be found [here](https://github.com/kbarnatchez/kbarnatchez/tree/master/content/post/2020-09-08-meas-error).
