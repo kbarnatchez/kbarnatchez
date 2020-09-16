@@ -7,7 +7,6 @@ knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding) })
 author: "Keith Barnatchez"
 date: "2019-09-12T13:43:40"
-comments: true
 ---
 
 This week’s Riddler Express was a made with playoff basketball in mind
@@ -82,7 +81,7 @@ get the same result through simulations:
 
     num_success/counter
 
-    ## [1] 0.2289
+    ## [1] 0.2414
 
 We see that the results match.
 
@@ -109,4 +108,7 @@ We can plot this over *n*:
       xlab("Max number of players per town") + 
       ggtitle("Don't plan on 50 v. 50 pickup basketball") 
 
-![](index_files/figure-markdown_strict/unnamed-chunk-2-1.png)
+![](index_files/figure-markdown_strict/Figure1-1.png)
+
+Source code for this post can be found
+[here](https://github.com/kbarnatchez/kbarnatchez/tree/master/content/post/2020-09-12-riddler).
