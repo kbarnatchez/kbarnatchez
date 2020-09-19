@@ -41,7 +41,7 @@ $$
 \text{log}L(\varepsilon) = -\frac{N}{2}\log2\pi - N\log\sigma - \frac{1}{2\sigma^2}\varepsilon'\varepsilon 
 $$
 
-Now, we don't observe $\varepsilon$ but we do observe $y$. It's tempting to just replace $\varepsilon$ with $y$ in the log-likelihood above, but this is not correct. Recall that if we know the density for some random variable $x_1$ to be $f_{x_1}(x_1)$, and we know some other variable $x_2$ is related to $x_1$ by $x_1 = g(x_2)$, then $f_{x_2} = f_{x_1}(g(x_2))\text{det}(J_{x_2})$, where $J_{x_2}$ is the Jacobian of $g$ with respect to $x_2$. In our case, 
+Now, we don't observe $\varepsilon$ but we do observe $y$. It's tempting to just replace $\varepsilon$ with $y - X\beta$ in the log-likelihood above, but this is not correct. Recall that if we know the density for some random variable $x_1$ to be $f_{x_1}(x_1)$, and we know some other variable $x_2$ is related to $x_1$ by $x_1 = g(x_2)$, then $f_{x_2} = f_{x_1}(g(x_2))\text{det}(J_{x_2})$, where $J_{x_2}$ is the Jacobian of $g$ with respect to $x_2$. In our case, 
 $$
 \varepsilon = (I - \rho_1 C - \rho_2 F)y - X\beta
 $$
@@ -50,11 +50,11 @@ so that the Jacobian is $(I - \rho_1 C - \rho_2 F)$.
 ### A quick algorithm for computing the likelihood
 In the case of a simple spatial model (just one weighting matrix $W$), the log-likelihood is
 $$
-\text{log}L(\varepsilon) = -\frac{N}{2}\log2\pi - N\log\sigma - \frac{1}{2\sigma^2}\varepsilon'\varepsilon + \log \det(I-\rho W)
+\text{log}L(y|X) = -\frac{N}{2}\log2\pi - N\log\sigma - \frac{1}{2\sigma^2}(y - X\beta)'(y - X\beta) + \log \det(I-\rho W)
 $$
 Computationally, this becomes a pain when we have to compute the log determinant term for every iteration of the MLE procedure. Depending on the size of our cross-section, the computation of this term alone can slow things down considerably if we use brute force methods. Luckily, there are much faster ways to go about this than directly computing the determinant.
 
-You may remember that the *deterministic polynomial* of an $N \times N$ matrix $W$ with eigenvalues $\lambda_1,\ldots,\lambda_N$ is given by 
+You may remember that the *characteristic polynomial* of an $N \times N$ matrix $W$ with eigenvalues $\lambda_1,\ldots,\lambda_N$ is given by 
 $$
 f(\lambda) := \det(W-\lambda I) =   (\lambda_1 - \lambda)\ldots(\lambda_N-\lambda)
 $$
